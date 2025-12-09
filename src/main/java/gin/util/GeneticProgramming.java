@@ -27,7 +27,7 @@ import java.util.Random;
  * Method-based General GP search.
  */
 
-public abstract class GP extends Sampler {
+public abstract class GeneticProgramming extends Sampler {
 
     @Serial
     private static final long serialVersionUID = 8547883760400442899L;
@@ -59,7 +59,7 @@ public abstract class GP extends Sampler {
     protected Random mutationRng;
     protected Random individualRng;
 
-    public GP(String[] args) {
+    public GeneticProgramming(String[] args) {
         super(args);
         Args.parseOrExit(this, args);
         setup();
@@ -67,7 +67,7 @@ public abstract class GP extends Sampler {
     }
 
     // Constructor used for testing
-    public GP(File projectDir, File methodFile) {
+    public GeneticProgramming(File projectDir, File methodFile) {
         super(projectDir, methodFile);
         setup();
     }

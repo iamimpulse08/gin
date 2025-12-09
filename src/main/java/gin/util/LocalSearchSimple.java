@@ -2,17 +2,11 @@ package gin.util;
 
 import gin.Patch;
 import gin.edit.Edit;
-import gin.edit.line.CopyLine;
-import gin.edit.line.DeleteLine;
-import gin.edit.line.LineEdit;
 import gin.edit.llm.LLMMaskedStatement;
 import gin.edit.llm.LLMReplaceStatement;
 import gin.test.UnitTest;
 import gin.test.UnitTestResultSet;
 import org.pmw.tinylog.Logger;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.None;
-import com.sampullara.cli.Argument;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,14 +14,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 /**
  * Method-based LocalSearchSimple search.
  */
 
-public abstract class LocalSearchSimple extends GP {
+public abstract class LocalSearchSimple extends GeneticProgramming {
 
     // Percentage of population size to be selected during tournament selection
     private static final double TOURNAMENT_PERCENTAGE = 0.2;

@@ -5,30 +5,26 @@ import gin.test.UnitTest;
 import gin.test.UnitTestResultSet;
 
 import java.io.File;
-import java.io.Serial;
 import java.util.List;
 
 
 /**
- * Method-based GPRuntime search.
+ * Method-based GPMemory search.
  */
 
-public class GPRuntime extends GPSimple {
+public class GeneticProgrammingMemory extends GeneticProgrammingSimple {
 
-    @Serial
-    private static final long serialVersionUID = 2553742317029378882L;
-
-    public GPRuntime(String[] args) {
+    public GeneticProgrammingMemory(String[] args) {
         super(args);
     }
 
     // Constructor used for testing
-    public GPRuntime(File projectDir, File methodFile) {
+    public GeneticProgrammingMemory(File projectDir, File methodFile) {
         super(projectDir, methodFile);
     }
 
     public static void main(String[] args) {
-        GPRuntime sampler = new GPRuntime(args);
+        GeneticProgrammingMemory sampler = new GeneticProgrammingMemory(args);
         sampler.sampleMethods();
     }
 
@@ -44,7 +40,7 @@ public class GPRuntime extends GPSimple {
 
         double fitness = Double.MAX_VALUE;
         if (results.getCleanCompile() && results.allTestsSuccessful()) {
-            return (double) (results.totalExecutionTime() / 1000000);
+            return (double) results.totalMemoryUsage();
         }
         return fitness;
     }

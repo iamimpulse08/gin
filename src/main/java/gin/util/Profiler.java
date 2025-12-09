@@ -33,7 +33,7 @@ public class Profiler implements Serializable {
     private static final String[] HEADER = {"Project", "MethodIndex", "Method", "Count", "Tests"};
     private static final String WORKING_DIR = "profiler_out";
     private static final String JFR_ARG_BEFORE_11 = "-XX:+UnlockCommercialFeatures -XX:+FlightRecorder -XX:StartFlightRecording=name=Gin,dumponexit=true,settings=profile,filename=";
-    private static final String JFR_ARG_11_AFTER = "-Xlog:jfr+system=info -XX:+FlightRecorder -XX:FlightRecorderOptions=stackdepth=256 -XX:StartFlightRecording=name=Gin#JFRNAME#,settings=#SETTINGSNAME#,dumponexit=true,settings=profile,filename=#JFRNAME#";
+    private static final String JFR_ARG_11_AFTER = "-Xlog:jfr+system=info -XX:+FlightRecorder -XX:FlightRecorderOptions=stackdepth=256 -XX:StartFlightRecording=name=Gin,settings=#SETTINGSNAME#,dumponexit=true,filename=#JFRNAME#";
     private static String HPROF_ARG = "-agentlib:hprof=cpu=samples,lineno=y,depth=1,interval=$hprofInterval,file=";
     // Instance Members
     private final File workingDir;
@@ -219,8 +219,24 @@ public class Profiler implements Serializable {
                 } else {
                     if (JavaUtils.getJavaVersion() < 11) {
                         args = JFR_ARG_BEFORE_11 + jfrFile(test, rep, startTime).getAbsolutePath();
-                    } else {
-                        args = JFR_ARG_11_AFTER.replace("#JFRNAME#", jfrFile(test, rep, startTime).getAbsolutePath()).replace("#SETTINGSNAME#", writeJfrConfigNextToOutputs(workingDir).toString());
+                    }
+                    else {
+
+                        // windows-specific fix for file paths containing spaces.
+                        String jfrPath = jfrFile(test, rep, startTime).getAbsolutePath();
+                        String settingsPath = writeJfrConfigNextToOutputs(workingDir).toString();
+
+                        if (jfrPath.contains(" ")) {
+                            jfrPath = "\"" + jfrPath + "\"";
+                        }
+
+                        if (settingsPath.contains(" ")) {
+                            settingsPath = "\"" + settingsPath + "\"";
+                        }
+
+                        args = JFR_ARG_11_AFTER
+                                .replace("#JFRNAME#", jfrPath)
+                                .replace("#SETTINGSNAME#", settingsPath);
                     }
                 }
 

@@ -22,7 +22,7 @@ import java.util.Map;
  * and its Java implementation at <a href="https://github.com/squaresLab/genprog4java">...</a>
  */
 
-public class GPFix extends GPSimple {
+public class GeneticProgrammingFix extends GeneticProgrammingSimple {
 
     @Serial
     private static final long serialVersionUID = 1043876194620277519L;
@@ -35,19 +35,19 @@ public class GPFix extends GPSimple {
     private Map<UnitTest, Boolean> testResults = new HashMap<>();
     private Map<Patch, Double> recordedFitness = new HashMap<>();
 
-    public GPFix(String[] args) {
+    public GeneticProgrammingFix(String[] args) {
         super(args);
         Args.parseOrExit(this, args);
         printAdditionalArguments();
     }
 
     // Constructor used for testing
-    public GPFix(File projectDir, File methodFile) {
+    public GeneticProgrammingFix(File projectDir, File methodFile) {
         super(projectDir, methodFile);
     }
 
     public static void main(String[] args) {
-        GPFix sampler = new GPFix(args);
+        GeneticProgrammingFix sampler = new GeneticProgrammingFix(args);
         sampler.sampleMethods();
     }
 

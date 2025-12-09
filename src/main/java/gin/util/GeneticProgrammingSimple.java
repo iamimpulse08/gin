@@ -19,7 +19,7 @@ import java.util.*;
  * and its Java implementation at <a href="https://github.com/squaresLab/genprog4java">...</a>
  */
 
-public abstract class GPSimple extends GP {
+public abstract class GeneticProgrammingSimple extends GeneticProgramming {
 
     @Serial
     private static final long serialVersionUID = -3339464277865429122L;
@@ -28,12 +28,12 @@ public abstract class GPSimple extends GP {
     // Probability of adding an edit during uniform crossover
     private static final double MUTATE_PROBABILITY = 0.5;
 
-    public GPSimple(String[] args) {
+    public GeneticProgrammingSimple(String[] args) {
         super(args);
     }
 
     // Constructor used for testing
-    public GPSimple(File projectDir, File methodFile) {
+    public GeneticProgrammingSimple(File projectDir, File methodFile) {
         super(projectDir, methodFile);
     }
 

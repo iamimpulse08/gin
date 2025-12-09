@@ -20,14 +20,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class GPFixTest {
+public class GeneticProgrammingFixTest {
 
     File resourcesDir = new File(TestConfiguration.EXAMPLE_DIR_NAME);
     File packageDir = new File(resourcesDir, "mypackage");
     File methodFile = new File(packageDir, "profiler_results_faulty.csv");
     File outputFile = new File(packageDir, "gpfix_sampler_results.csv");
 
-    GPFix sampler;
+    GeneticProgrammingFix sampler;
 
     // Compile source files.
     private static void buildExampleClasses() throws IOException {
@@ -59,7 +59,7 @@ public class GPFixTest {
     @Before
     public void setUp() throws Exception {
 
-        sampler = new GPFix(resourcesDir, methodFile);
+        sampler = new GeneticProgrammingFix(resourcesDir, methodFile);
         sampler.outputFile = outputFile;
         sampler.classPath = resourcesDir.getPath();
         sampler.setUp();
