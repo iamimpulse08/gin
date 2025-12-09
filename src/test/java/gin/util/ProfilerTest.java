@@ -177,5 +177,4 @@ public class ProfilerTest {
         String[] args = {"-p", "gradle-simple", "-d", GRADLE_SIMPLE_PROJECT_DIR, "-r", "1", "-o", "simple.csv", "-prof", "jfr", "-save", "s"};
         Assert.assertThrows(IllegalArgumentException.class, () -> new Profiler(args));
     }
-
 }

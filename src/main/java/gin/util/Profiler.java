@@ -7,6 +7,7 @@ import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import gin.test.UnitTest;
 import gin.util.enums.ProfilerChoice;
+import kotlin.Unit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.pmw.tinylog.Logger;
@@ -38,6 +39,11 @@ public class Profiler implements Serializable {
     // Instance Members
     private final File workingDir;
     private final Project project;
+
+    /**
+     * This is for usage with, -from.
+     */
+    private int culledUnitTests;
     // Commandline arguments
     @Argument(alias = "p", description = "Project name, required", required = true)
     protected String projectName;
@@ -57,6 +63,9 @@ public class Profiler implements Serializable {
     protected Boolean skipInitialRun = false;
     @Argument(alias = "n", description = "Only mavenProfile the first n tests. For debugging.")
     protected Integer profileFirstNTests;
+    @Argument(alias = "from", description = "Only mavenProfile from the Nth test. For debugging or crash")
+    protected Integer profileFromNthTest;
+
     // Constants
     @Argument(alias = "t", description = "Run given maven task rather than test")
     protected String mavenTaskName = "test";
@@ -195,6 +204,57 @@ public class Profiler implements Serializable {
         // Sort for replication when debugging
         List<UnitTest> sortedTests = new LinkedList<>(tests);
         Collections.sort(sortedTests);
+        int testsEncountered = 0;
+
+        if (this.profileFromNthTest != null) {
+            // for every element, skip until the nth element, then add accordingly.
+            // for example, if you want to profile from the 501st test, (500 index), repeat until 501.
+            Logger.info("Performing Culling on the first " + profileFromNthTest + " tests.");
+
+
+            // create a safe, array list copy of the data, for reduction in operations and simplicity.
+            List<UnitTest> copiedArray = new ArrayList<>(sortedTests);
+            List<UnitTest> finalArray = new ArrayList<>(); // the array which will have elements added to it.
+
+            // for every element in the copied list
+            for (int i = 0; i < copiedArray.size(); i++) {
+
+                // grab the test from the array to manipulate since multiple places would call this.
+                UnitTest test = copiedArray.get(i);
+
+                // TODO checking if the test is parameterised could benefit from a different location due to the logical flow of operations,
+                // TODO leads to the 536th element being about 50 to 100 elements previous.
+                if (isParameterizedTest(test)) {
+                    Logger.warn("Ignoring parameterized test, as jUnit does not support running individual " + "parameterized tests.");
+                    Logger.warn("See https://github.com/junit-team/junit4/issues/664");
+                    Logger.warn("Test was: " + test);
+                    culledUnitTests++;
+                    continue;
+                }
+
+                testsEncountered++;
+
+                // TODO might need to check the difference in values, e.g. I - culled (?)
+                // For example, "2025-12-09 21:25:11 gin.util.Profiler.profileTestSuite() INFO: Running unit test com.google.gson.CommentsTest.testParseComments [gson] (823/2242) Rep 1/1" is typically at the start of the list
+                // even after culling
+
+                // if the current element is Nth elements in, add it to the collection.
+                if (testsEncountered > profileFromNthTest) {
+                    finalArray.add(test);
+                    continue;
+                }
+                culledUnitTests++;
+            }
+
+            int sizeAfter = finalArray.size();
+            sortedTests = new LinkedList<>(finalArray);
+
+            Logger.info("Cut test count down to: " + sizeAfter + " tests.");
+        }
+
+        if (culledUnitTests != 0 && culledUnitTests > 0) {
+            testCount = culledUnitTests;
+        }
 
         for (UnitTest test : sortedTests) {
 
@@ -240,6 +300,12 @@ public class Profiler implements Serializable {
                     }
                 }
 
+                String className = test.getFullClassName();
+                System.out.println("Class: " + className);
+                String innerClassName = test.getInnerClassName();
+                System.out.println("Inner class: " + innerClassName);
+                String topClassName = test.getTopClassName();
+                System.out.println("Top class: " + topClassName);
 
                 String progressMessage = String.format("Running unit test %s (%d/%d) Rep %d/%d", test, testCount, tests.size(), rep, this.reps);
 
