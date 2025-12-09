@@ -10,6 +10,7 @@ import gin.util.enums.ProfilerChoice;
 import kotlin.Unit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.ekstazi.log.Log;
 import org.pmw.tinylog.Logger;
 
 import java.io.*;
@@ -40,10 +41,6 @@ public class Profiler implements Serializable {
     private final File workingDir;
     private final Project project;
 
-    /**
-     * This is for usage with, -from.
-     */
-    private int culledUnitTests;
     // Commandline arguments
     @Argument(alias = "p", description = "Project name, required", required = true)
     protected String projectName;
@@ -228,7 +225,6 @@ public class Profiler implements Serializable {
                     Logger.warn("Ignoring parameterized test, as jUnit does not support running individual " + "parameterized tests.");
                     Logger.warn("See https://github.com/junit-team/junit4/issues/664");
                     Logger.warn("Test was: " + test);
-                    culledUnitTests++;
                     continue;
                 }
 
@@ -243,18 +239,16 @@ public class Profiler implements Serializable {
                     finalArray.add(test);
                     continue;
                 }
-                culledUnitTests++;
             }
 
             int sizeAfter = finalArray.size();
             sortedTests = new LinkedList<>(finalArray);
 
             Logger.info("Cut test count down to: " + sizeAfter + " tests.");
+            Logger.info("The number of tests encountered: " + testsEncountered);
         }
 
-        if (culledUnitTests != 0 && culledUnitTests > 0) {
-            testCount = culledUnitTests;
-        }
+        //if (culledUnitTests != 0 && culledUnitTests > 0) {testCount = culledUnitTests;}
 
         for (UnitTest test : sortedTests) {
 
